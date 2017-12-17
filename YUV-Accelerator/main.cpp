@@ -11,8 +11,8 @@ using namespace std;
 
 //#define NO_SIMD
 //#define MMX
-//#define SSE2
-#define AVX
+#define SSE2
+//#define AVX
 
 #define WIDTH 1920
 #define HEIGHT 1080
@@ -186,8 +186,8 @@ clock_t process_with_avx(){
     start_time = clock();
     
     /* YUV2RGB */
-    yuv2rgb_ori(yuv1, rgb1);
-    yuv2rgb_ori(yuv2, rgb2);
+    yuv2rgb_avx(yuv1, rgb1);
+    yuv2rgb_avx(yuv2, rgb2);
     // Output a BMP file from INPUT_YUV_1.toRGB() to see if YUV::yuv2rgb() works correctly.
     // BMP_OUT(OUTPUT_BMP, rgb2);
     
@@ -206,8 +206,8 @@ clock_t process_with_avx(){
     start_time = clock();
     
     /* YUV2RGB */
-    yuv2rgb_ori(yuv1, rgb1);
-    yuv2rgb_ori(yuv2, rgb2);
+    yuv2rgb_avx(yuv1, rgb1);
+    yuv2rgb_avx(yuv2, rgb2);
     
     /* Superimposing */
     for(int alpha = 1; alpha <= 255; alpha += 3){

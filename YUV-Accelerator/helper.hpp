@@ -23,6 +23,7 @@ using namespace std;
 
 double clip(int upper_bound, int lower_bound, double ori_num);
 void print_64(__m64 num);
+void print_128(__m128 num);
 void write_back_from_64(__m64 num, uint8_t* dst, int pos);
 void write_back_from_128(__m128 num, uint8_t* dst, int pos);
 void write_back_from_128_not_reverse(__m128 num, uint8_t* dst, int pos);

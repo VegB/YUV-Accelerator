@@ -27,6 +27,14 @@ void print_64(__m64 num){
     cout << endl;
 }
 
+void print_128(__m128 num){
+    float* p = (float*)(&num);
+    for(int i = 0; i < 4; ++i){
+        cout << *(p + i) << " ";
+    }
+    cout << endl;
+}
+
 void write_back_from_64(__m64 num, uint8_t* dst, int pos){
     int16_t* p = (int16_t*)(&num);
     for(int i = 0; i < 4; ++i){

@@ -59,3 +59,13 @@ void YUVImage::get_uv(uint8_t* u_, uint8_t* v_){
         }
     }
 }
+
+void YUVImage::store_uv(uint8_t* u_, uint8_t* v_){
+    for (int i = 0, k = 0; i < height; i += 2) {
+        for (int j = 0; j < width; j += 2, ++k) {
+            int pos = i * width + j;
+            u[k] = (uint8_t)u_[pos];
+            v[k] = (uint8_t)v_[pos];
+        }
+    }
+}

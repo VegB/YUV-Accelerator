@@ -43,6 +43,7 @@ public:
     void init_image();
     void write_to_file(string filename);
     void get_uv(uint8_t* u_, uint8_t* v_);
+    void store_uv(uint8_t* u_, uint8_t* v_);
 };
 
 #endif /* yuv_hpp */

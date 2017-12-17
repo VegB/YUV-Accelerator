@@ -24,32 +24,33 @@ void yuv2rgb_ori(YUVImage& yuv, RGBImage& rgb){
     }
     rgb.init_image();
     
-    for(int i = 0, pos = 0; i < rgb.height; ++i){
-        for(int j = 0; j < rgb.width; ++j, ++pos){  // k = i * width + j
-            int uv_pos = (i / 2) * rgb.width / 2 + (j / 2);  // index of u,v
-            double r, g, b;
+    uint8_t tmp_u[yuv.width * yuv.height];
+    uint8_t tmp_v[yuv.width * yuv.height];
+    yuv.get_uv(tmp_u, tmp_v);
+    
+    for(int i = 0; i < rgb.width * rgb.height; ++i){
+        double r, g, b;
 #ifdef THIS_YEAR
-            r = (double)yuv.y[pos]
-                + 1.140 * (double)yuv.v[uv_pos];
-            g = (double)yuv.y[pos]
-                - 0.394 * (double)yuv.u[uv_pos]
-                - 0.581 * (double)yuv.v[uv_pos];
-            b = (double)yuv.y[pos]
-                + 2.032 * (double)yuv.u[uv_pos];
+        r = (double)yuv.y[i]
+            + 1.140 * (double)tmp_v[i];
+        g = (double)yuv.y[i]
+            - 0.394 * (double)tmp_u[i]
+            - 0.581 * (double)tmp_v[i];
+        b = (double)yuv.y[i]
+            + 2.032 * (double)tmp_u[i];
 #endif
 #ifndef THIS_YEAR
-            r = 1.164383 * ((double)yuv.y[pos] - 16)
-                + 1.596027 * ((double)yuv.v[uv_pos] - 128);
-            g = 1.164383 * ((double)yuv.y[pos] - 16)
-                - 0.391762 * ((double)yuv.u[uv_pos] - 128)
-                - 0.812968 * ((double)yuv.v[uv_pos] - 128);
-            b = 1.164383 * ((double)yuv.y[pos] - 16)
-                + 2.017232 * ((double)yuv.u[uv_pos] - 128);
+        r = 1.164383 * ((double)yuv.y[i] - 16)
+            + 1.596027 * ((double)tmp_v[i] - 128);
+        g = 1.164383 * ((double)yuv.y[i] - 16)
+            - 0.391762 * ((double)tmp_u[i] - 128)
+            - 0.812968 * ((double)tmp_v[i] - 128);
+        b = 1.164383 * ((double)yuv.y[i] - 16)
+            + 2.017232 * ((double)tmp_u[i] - 128);
 #endif
-            rgb.r[pos] = (uint8_t)clip(0, 255, r);
-            rgb.g[pos] = (uint8_t)clip(0, 255, g);
-            rgb.b[pos] = (uint8_t)clip(0, 255, b);
-        }
+        rgb.r[i] = (uint8_t)clip(0, 255, r);
+        rgb.g[i] = (uint8_t)clip(0, 255, g);
+        rgb.b[i] = (uint8_t)clip(0, 255, b);
     }
 }
 
@@ -184,7 +185,6 @@ void yuv2rgb_sse2(YUVImage& yuv, RGBImage& rgb){
         __m128 rst = _mm_add_ps(y_rst, u_rst);
         write_back_from_128(rst, rgb.b, i);
     }
-    
     _mm_empty();
 }
 
@@ -202,45 +202,44 @@ void rgb2yuv_ori(RGBImage& rgb, YUVImage& yuv){
     }
     yuv.init_image();
     
+    uint8_t tmp_u[yuv.width * yuv.height];
+    uint8_t tmp_v[yuv.width * yuv.height];
+    
     double y, u, v;
     /* Y */
-    for(int i = 0, pos = 0; i < rgb.height; ++i){
-        for(int j = 0; j < rgb.width; ++j, ++pos){
+    for(int pos = 0; pos < yuv.width * yuv.height; ++pos){
 #ifdef THIS_YEAR
-            y = 0.299 * rgb.r[pos]
-                + 0.587 * rgb.g[pos]
-                + 0.144 * rgb.b[pos];
+        y = 0.299 * rgb.r[pos]
+            + 0.587 * rgb.g[pos]
+            + 0.144 * rgb.b[pos];
 #endif
 #ifndef THIS_YEAR
-            y = 0.256788 * rgb.r[pos]
-                + 0.504129 * rgb.g[pos]
-                + 0.097906 * rgb.b[pos] + 16;
+        y = 0.256788 * rgb.r[pos]
+            + 0.504129 * rgb.g[pos]
+            + 0.097906 * rgb.b[pos] + 16;
 #endif
-            yuv.y[pos] = (uint8_t)clip(0, 255, y);
-        }
+        yuv.y[pos] = (uint8_t)clip(0, 255, y);
     }
     
     /* U, V */
-    for(int i = 0, uv_pos = 0; i < rgb.height; i += 2){
-        for(int j = 0; j < rgb.width; j += 2, ++uv_pos){
-            int rgb_pos = i * rgb.width + j;
-            double u, v;
+    for(int rgb_pos = 0; rgb_pos < yuv.width * yuv.height; ++rgb_pos){
+        double u, v;
 #ifdef THIS_YEAR
-            u = -0.147 * rgb.r[rgb_pos]
-                - 0.289 * rgb.g[rgb_pos]
-                + 0.436 * rgb.b[rgb_pos];
-            v = 0.615 * rgb.r[rgb_pos]
-                - 0.515 * rgb.g[rgb_pos]
-                - 0.100 * rgb.b[rgb_pos];
+        u = -0.147 * rgb.r[rgb_pos]
+            - 0.289 * rgb.g[rgb_pos]
+            + 0.436 * rgb.b[rgb_pos];
+        v = 0.615 * rgb.r[rgb_pos]
+            - 0.515 * rgb.g[rgb_pos]
+            - 0.100 * rgb.b[rgb_pos];
 #endif
 #ifndef THIS_YEAR
-            u = -0.148223*rgb.r[rgb_pos] - 0.290993*rgb.g[rgb_pos] + 0.439216*rgb.b[rgb_pos] + 128;
-            v = 0.439216*rgb.r[rgb_pos] - 0.367788*rgb.g[rgb_pos] - 0.071427*rgb.b[rgb_pos] + 128;
+        u = -0.148223*rgb.r[rgb_pos] - 0.290993*rgb.g[rgb_pos] + 0.439216*rgb.b[rgb_pos] + 128;
+        v = 0.439216*rgb.r[rgb_pos] - 0.367788*rgb.g[rgb_pos] - 0.071427*rgb.b[rgb_pos] + 128;
 #endif
-            yuv.u[uv_pos] = (uint8_t)clip(0, 255, u);
-            yuv.v[uv_pos] = (uint8_t)clip(0, 255, v);
-        }
+        tmp_u[rgb_pos] = (uint8_t)clip(0, 255, u);
+        tmp_v[rgb_pos] = (uint8_t)clip(0, 255, v);
     }
+    yuv.store_uv(tmp_u, tmp_v);
 }
 
 /* MMX */
@@ -257,6 +256,7 @@ void rgb2yuv_sse2(RGBImage& rgb, YUVImage& yuv){
     uint8_t tmp_v[yuv.width * yuv.height];
     
     __m128 CONST_16 = _mm_set_ps((float)16, (float)16, (float)16, (float)16);
+    __m128 CONST_128 = _mm_set_ps((float)128, (float)128, (float)128, (float)128);
     
     /* RGB2Y */
     for(int i = 0; i < rgb.width * rgb.height; i += 4){
@@ -279,48 +279,46 @@ void rgb2yuv_sse2(RGBImage& rgb, YUVImage& yuv){
     }
     
     /* RGB2U */
-    for(int i = 0, uv_pos = 0; i < rgb.height; i += 2){
-        for(int j = 0; j < rgb.width; j += 8, uv_pos += 4){
-            int rgb_pos = i * rgb.width + j;
-            __m128 r = _mm_set_ps((float)rgb.r[rgb_pos], (float)rgb.r[rgb_pos + 2], (float)rgb.r[rgb_pos + 4], (float)rgb.r[rgb_pos + 6]);
-            __m128 r_param = _mm_set_ps((float)rgb2u[0], (float)rgb2u[0], (float)rgb2u[0], (float)rgb2u[0]);
-            __m128 r_rst = _mm_mul_ps(r_param, r);
+    for(int i = 0; i < rgb.width * rgb.height; i += 4){
+        __m128 r = _mm_set_ps((float)rgb.r[i], (float)rgb.r[i + 1], (float)rgb.r[i + 2], (float)rgb.r[i + 3]);
+        __m128 r_param = _mm_set_ps((float)rgb2u[0], (float)rgb2u[0], (float)rgb2u[0], (float)rgb2u[0]);
+        __m128 r_rst = _mm_mul_ps(r_param, r);
+    
+        __m128 g = _mm_set_ps((float)rgb.g[i], (float)rgb.g[i + 1], (float)rgb.g[i + 2], (float)rgb.g[i + 3]);
+        __m128 g_param = _mm_set_ps((float)rgb2u[1], (float)rgb2u[1], (float)rgb2u[1], (float)rgb2u[1]);
+        __m128 g_rst = _mm_mul_ps(g_param, g);
         
-            __m128 g = _mm_set_ps((float)rgb.g[rgb_pos], (float)rgb.g[rgb_pos + 2], (float)rgb.g[rgb_pos + 4], (float)rgb.g[rgb_pos + 6]);
-            __m128 g_param = _mm_set_ps((float)rgb2u[1], (float)rgb2u[1], (float)rgb2u[1], (float)rgb2u[1]);
-            __m128 g_rst = _mm_mul_ps(g_param, g);
-            
-            __m128 b = _mm_set_ps((float)rgb.b[rgb_pos], (float)rgb.b[rgb_pos + 2], (float)rgb.b[rgb_pos + 4], (float)rgb.b[rgb_pos + 6]);
-            __m128 b_param = _mm_set_ps((float)rgb2u[2], (float)rgb2u[2], (float)rgb2u[2], (float)rgb2u[2]);
-            __m128 b_rst = _mm_mul_ps(b_param, b);
-            
-            __m128 rst1 = _mm_add_ps(r_rst, g_rst);
-            __m128 rst = _mm_add_ps(b_rst, rst1);
-            write_back_from_128(rst, yuv.u, uv_pos);
-        }
+        __m128 b = _mm_set_ps((float)rgb.b[i], (float)rgb.b[i + 1], (float)rgb.b[i + 2], (float)rgb.b[i + 3]);
+        __m128 b_param = _mm_set_ps((float)rgb2u[2], (float)rgb2u[2], (float)rgb2u[2], (float)rgb2u[2]);
+        __m128 b_rst = _mm_mul_ps(b_param, b);
+        
+        __m128 rst1 = _mm_add_ps(r_rst, g_rst);
+        __m128 rst2 = _mm_add_ps(b_rst, rst1);
+        __m128 rst = _mm_add_ps(rst2, CONST_128);
+//        print_128(rst);
+        write_back_from_128(rst, tmp_u, i);
     }
 
     /* RGB2V */
-    for(int i = 0, uv_pos = 0; i < rgb.height; i += 2){
-        for(int j = 0; j < rgb.width; j += 8, uv_pos += 4){
-            int rgb_pos = i * rgb.width + j;
-            __m128 r = _mm_set_ps((float)rgb.r[rgb_pos], (float)rgb.r[rgb_pos + 2], (float)rgb.r[rgb_pos + 4], (float)rgb.r[rgb_pos + 6]);
-            __m128 r_param = _mm_set_ps((float)rgb2v[0], (float)rgb2v[0], (float)rgb2v[0], (float)rgb2v[0]);
-            __m128 r_rst = _mm_mul_ps(r_param, r);
-            
-            __m128 g = _mm_set_ps((float)rgb.g[rgb_pos], (float)rgb.g[rgb_pos + 2], (float)rgb.g[rgb_pos + 4], (float)rgb.g[rgb_pos + 6]);
-            __m128 g_param = _mm_set_ps((float)rgb2v[1], (float)rgb2v[1], (float)rgb2v[1], (float)rgb2v[1]);
-            __m128 g_rst = _mm_mul_ps(g_param, g);
-            
-            __m128 b = _mm_set_ps((float)rgb.b[rgb_pos], (float)rgb.b[rgb_pos + 2], (float)rgb.b[rgb_pos + 4], (float)rgb.b[rgb_pos + 6]);
-            __m128 b_param = _mm_set_ps((float)rgb2v[2], (float)rgb2v[2], (float)rgb2v[2], (float)rgb2v[2]);
-            __m128 b_rst = _mm_mul_ps(b_param, b);
-            
-            __m128 rst1 = _mm_add_ps(r_rst, g_rst);
-            __m128 rst = _mm_add_ps(b_rst, rst1);
-            write_back_from_128(rst, yuv.v, uv_pos);
-        }
+    for(int i = 0; i < rgb.width * rgb.height; i += 4){
+        __m128 r = _mm_set_ps((float)rgb.r[i], (float)rgb.r[i + 1], (float)rgb.r[i + 2], (float)rgb.r[i + 3]);
+        __m128 r_param = _mm_set_ps((float)rgb2v[0], (float)rgb2v[0], (float)rgb2v[0], (float)rgb2v[0]);
+        __m128 r_rst = _mm_mul_ps(r_param, r);
+        
+        __m128 g = _mm_set_ps((float)rgb.g[i], (float)rgb.g[i + 1], (float)rgb.g[i + 2], (float)rgb.g[i + 3]);
+        __m128 g_param = _mm_set_ps((float)rgb2v[1], (float)rgb2v[1], (float)rgb2v[1], (float)rgb2v[1]);
+        __m128 g_rst = _mm_mul_ps(g_param, g);
+        
+        __m128 b = _mm_set_ps((float)rgb.b[i], (float)rgb.b[i + 1], (float)rgb.b[i + 2], (float)rgb.b[i + 3]);
+        __m128 b_param = _mm_set_ps((float)rgb2v[2], (float)rgb2v[2], (float)rgb2v[2], (float)rgb2v[2]);
+        __m128 b_rst = _mm_mul_ps(b_param, b);
+        
+        __m128 rst1 = _mm_add_ps(r_rst, g_rst);
+        __m128 rst2 = _mm_add_ps(b_rst, rst1);
+        __m128 rst = _mm_add_ps(rst2, CONST_128);
+        write_back_from_128(rst, tmp_v, i);
     }
+    yuv.store_uv(tmp_u, tmp_v);
     _mm_empty();
 }
 
@@ -332,18 +330,19 @@ void rgb2yuv_avx(RGBImage& rgb, YUVImage& yuv){
     uint8_t tmp_v[yuv.width * yuv.height];
     
     __m256 CONST_16 = _mm256_set_ps((float)16, (float)16, (float)16, (float)16, (float)16, (float)16, (float)16, (float)16);
+    __m256 CONST_128 = _mm256_set_ps((float)128, (float)128, (float)128, (float)128, (float)128, (float)128, (float)128, (float)128);
     
     /* RGB2Y */
     for(int i = 0; i < rgb.width * rgb.height; i += 8){
-        __m256 r = _mm256_set_ps((float)rgb.r[i], (float)rgb.r[i + 1], (float)rgb.r[i + 2], (float)rgb.r[i + 3], (float)rgb.r[i + 4], (float)rgb.r[i + 5], (float)rgb.r[i + 6], (float)rgb.r[i + 7]);
+        __m256 r = _mm256_set_ps((float)rgb.r[i], (float)rgb.r[i + 1], (float)rgb.r[i + 1], (float)rgb.r[i + 3], (float)rgb.r[i + 4], (float)rgb.r[i + 5], (float)rgb.r[i + 6], (float)rgb.r[i + 7]);
         __m256 r_param = _mm256_set_ps((float)rgb2y[0], (float)rgb2y[0], (float)rgb2y[0], (float)rgb2y[0], (float)rgb2y[0], (float)rgb2y[0], (float)rgb2y[0], (float)rgb2y[0]);
         __m256 r_rst = _mm256_mul_ps(r_param, r);
         
-        __m256 g = _mm256_set_ps((float)rgb.g[i], (float)rgb.g[i + 1], (float)rgb.g[i + 2], (float)rgb.g[i + 3], (float)rgb.g[i + 4], (float)rgb.g[i + 5], (float)rgb.g[i + 6], (float)rgb.g[i + 7]);
+        __m256 g = _mm256_set_ps((float)rgb.g[i], (float)rgb.g[i + 1], (float)rgb.g[i + 1], (float)rgb.g[i + 3], (float)rgb.g[i + 4], (float)rgb.g[i + 5], (float)rgb.g[i + 6], (float)rgb.g[i + 7]);
         __m256 g_param = _mm256_set_ps((float)rgb2y[1], (float)rgb2y[1], (float)rgb2y[1], (float)rgb2y[1], (float)rgb2y[1], (float)rgb2y[1], (float)rgb2y[1], (float)rgb2y[1]);
         __m256 g_rst = _mm256_mul_ps(g_param, g);
         
-        __m256 b = _mm256_set_ps((float)rgb.b[i], (float)rgb.b[i + 1], (float)rgb.b[i + 2], (float)rgb.b[i + 3], (float)rgb.g[i + 4], (float)rgb.g[i + 5], (float)rgb.g[i + 6], (float)rgb.g[i + 7]);
+        __m256 b = _mm256_set_ps((float)rgb.b[i], (float)rgb.b[i + 1], (float)rgb.b[i + 1], (float)rgb.b[i + 3], (float)rgb.g[i + 4], (float)rgb.g[i + 5], (float)rgb.g[i + 6], (float)rgb.g[i + 7]);
         __m256 b_param = _mm256_set_ps((float)rgb2y[2], (float)rgb2y[2], (float)rgb2y[2], (float)rgb2y[2], (float)rgb2y[2], (float)rgb2y[2], (float)rgb2y[2], (float)rgb2y[2]);
         __m256 b_rst = _mm256_mul_ps(b_param, b);
         
@@ -354,48 +353,45 @@ void rgb2yuv_avx(RGBImage& rgb, YUVImage& yuv){
     }
     
     /* RGB2U */
-    for(int i = 0, uv_pos = 0; i < rgb.height; i += 2){
-        for(int j = 0; j < rgb.width; j += 16, uv_pos += 8){
-            int rgb_pos = i * rgb.width + j;
-            __m256 r = _mm256_set_ps((float)rgb.r[rgb_pos], (float)rgb.r[rgb_pos + 2], (float)rgb.r[rgb_pos + 4], (float)rgb.r[rgb_pos + 6], (float)rgb.r[rgb_pos + 8], (float)rgb.r[rgb_pos + 10], (float)rgb.r[rgb_pos + 12], (float)rgb.r[rgb_pos + 14]);
-            __m256 r_param = _mm256_set_ps((float)rgb2u[0], (float)rgb2u[0], (float)rgb2u[0], (float)rgb2u[0], (float)rgb2u[0], (float)rgb2u[0], (float)rgb2u[0], (float)rgb2u[0]);
-            __m256 r_rst = _mm256_mul_ps(r_param, r);
-            
-            __m256 g = _mm256_set_ps((float)rgb.g[rgb_pos], (float)rgb.g[rgb_pos + 2], (float)rgb.g[rgb_pos + 4], (float)rgb.g[rgb_pos + 6], (float)rgb.g[rgb_pos + 8], (float)rgb.g[rgb_pos + 10], (float)rgb.g[rgb_pos + 12], (float)rgb.g[rgb_pos + 14]);
-            __m256 g_param = _mm256_set_ps((float)rgb2u[1], (float)rgb2u[1], (float)rgb2u[1], (float)rgb2u[1], (float)rgb2u[1], (float)rgb2u[1], (float)rgb2u[1], (float)rgb2u[1]);
-            __m256 g_rst = _mm256_mul_ps(g_param, g);
-            
-            __m256 b = _mm256_set_ps((float)rgb.b[rgb_pos], (float)rgb.b[rgb_pos + 2], (float)rgb.b[rgb_pos + 4], (float)rgb.b[rgb_pos + 6], (float)rgb.b[rgb_pos + 8], (float)rgb.b[rgb_pos + 10], (float)rgb.b[rgb_pos + 12], (float)rgb.b[rgb_pos + 14]);
-            __m256 b_param = _mm256_set_ps((float)rgb2u[2], (float)rgb2u[2], (float)rgb2u[2], (float)rgb2u[2], (float)rgb2u[2], (float)rgb2u[2], (float)rgb2u[2], (float)rgb2u[2]);
-            __m256 b_rst = _mm256_mul_ps(b_param, b);
-            
-            __m256 rst1 = _mm256_add_ps(r_rst, g_rst);
-            __m256 rst = _mm256_add_ps(b_rst, rst1);
-            write_back_from_256(rst, yuv.u, uv_pos);
-        }
+    for(int i = 0; i < rgb.width * rgb.height; i += 8){
+        __m256 r = _mm256_set_ps((float)rgb.r[i], (float)rgb.r[i + 1], (float)rgb.r[i + 2], (float)rgb.r[i + 3], (float)rgb.r[i + 4], (float)rgb.r[i + 5], (float)rgb.r[i + 6], (float)rgb.r[i + 7]);
+        __m256 r_param = _mm256_set_ps((float)rgb2u[0], (float)rgb2u[0], (float)rgb2u[0], (float)rgb2u[0], (float)rgb2u[0], (float)rgb2u[0], (float)rgb2u[0], (float)rgb2u[0]);
+        __m256 r_rst = _mm256_mul_ps(r_param, r);
+        
+        __m256 g = _mm256_set_ps((float)rgb.g[i], (float)rgb.g[i + 1], (float)rgb.g[i + 2], (float)rgb.g[i + 3], (float)rgb.g[i + 4], (float)rgb.g[i + 5], (float)rgb.g[i + 6], (float)rgb.g[i + 7]);
+        __m256 g_param = _mm256_set_ps((float)rgb2u[1], (float)rgb2u[1], (float)rgb2u[1], (float)rgb2u[1], (float)rgb2u[1], (float)rgb2u[1], (float)rgb2u[1], (float)rgb2u[1]);
+        __m256 g_rst = _mm256_mul_ps(g_param, g);
+        
+        __m256 b = _mm256_set_ps((float)rgb.b[i], (float)rgb.b[i + 1], (float)rgb.b[i + 2], (float)rgb.b[i + 3], (float)rgb.b[i + 4], (float)rgb.b[i + 5], (float)rgb.b[i + 6], (float)rgb.b[i + 7]);
+        __m256 b_param = _mm256_set_ps((float)rgb2u[2], (float)rgb2u[2], (float)rgb2u[2], (float)rgb2u[2], (float)rgb2u[2], (float)rgb2u[2], (float)rgb2u[2], (float)rgb2u[2]);
+        __m256 b_rst = _mm256_mul_ps(b_param, b);
+        
+        __m256 rst1 = _mm256_add_ps(r_rst, g_rst);
+        __m256 rst2 = _mm256_add_ps(b_rst, rst1);
+        __m256 rst = _mm256_add_ps(rst2, CONST_128);
+        write_back_from_256(rst, tmp_u, i);
     }
     
     /* RGB2V */
-    for(int i = 0, uv_pos = 0; i < rgb.height; i += 2){
-        for(int j = 0; j < rgb.width; j += 16, uv_pos += 8){
-            int rgb_pos = i * rgb.width + j;
-            __m256 r = _mm256_set_ps((float)rgb.r[rgb_pos], (float)rgb.r[rgb_pos + 2], (float)rgb.r[rgb_pos + 4], (float)rgb.r[rgb_pos + 6], (float)rgb.r[rgb_pos + 8], (float)rgb.r[rgb_pos + 10], (float)rgb.r[rgb_pos + 12], (float)rgb.r[rgb_pos + 14]);
-            __m256 r_param = _mm256_set_ps((float)rgb2v[0], (float)rgb2v[0], (float)rgb2v[0], (float)rgb2v[0], (float)rgb2v[0], (float)rgb2v[0], (float)rgb2v[0], (float)rgb2v[0]);
-            __m256 r_rst = _mm256_mul_ps(r_param, r);
-            
-            __m256 g = _mm256_set_ps((float)rgb.g[rgb_pos], (float)rgb.g[rgb_pos + 2], (float)rgb.g[rgb_pos + 4], (float)rgb.g[rgb_pos + 6], (float)rgb.g[rgb_pos + 8], (float)rgb.g[rgb_pos + 10], (float)rgb.g[rgb_pos + 12], (float)rgb.g[rgb_pos + 14]);
-            __m256 g_param = _mm256_set_ps((float)rgb2v[1], (float)rgb2v[1], (float)rgb2v[1], (float)rgb2v[1], (float)rgb2v[1], (float)rgb2v[1], (float)rgb2v[1], (float)rgb2v[1]);
-            __m256 g_rst = _mm256_mul_ps(g_param, g);
-            
-            __m256 b = _mm256_set_ps((float)rgb.b[rgb_pos], (float)rgb.b[rgb_pos + 2], (float)rgb.b[rgb_pos + 4], (float)rgb.b[rgb_pos + 6], (float)rgb.b[rgb_pos + 8], (float)rgb.b[rgb_pos + 10], (float)rgb.b[rgb_pos + 12], (float)rgb.b[rgb_pos + 14]);
-            __m256 b_param = _mm256_set_ps((float)rgb2v[2], (float)rgb2v[2], (float)rgb2v[2], (float)rgb2v[2], (float)rgb2v[2], (float)rgb2v[2], (float)rgb2v[2], (float)rgb2v[2]);
-            __m256 b_rst = _mm256_mul_ps(b_param, b);
-            
-            __m256 rst1 = _mm256_add_ps(r_rst, g_rst);
-            __m256 rst = _mm256_add_ps(b_rst, rst1);
-            write_back_from_256(rst, yuv.v, uv_pos);
-        }
+    for(int i = 0; i < rgb.width * rgb.height; i += 8){
+        __m256 r = _mm256_set_ps((float)rgb.r[i], (float)rgb.r[i + 1], (float)rgb.r[i + 2], (float)rgb.r[i + 3], (float)rgb.r[i + 4], (float)rgb.r[i + 5], (float)rgb.r[i + 6], (float)rgb.r[i + 7]);
+        __m256 r_param = _mm256_set_ps((float)rgb2v[0], (float)rgb2v[0], (float)rgb2v[0], (float)rgb2v[0], (float)rgb2v[0], (float)rgb2v[0], (float)rgb2v[0], (float)rgb2v[0]);
+        __m256 r_rst = _mm256_mul_ps(r_param, r);
+        
+        __m256 g = _mm256_set_ps((float)rgb.g[i], (float)rgb.g[i + 1], (float)rgb.g[i + 2], (float)rgb.g[i + 3], (float)rgb.g[i + 4], (float)rgb.g[i + 5], (float)rgb.g[i + 6], (float)rgb.g[i + 7]);
+        __m256 g_param = _mm256_set_ps((float)rgb2v[1], (float)rgb2v[1], (float)rgb2v[1], (float)rgb2v[1], (float)rgb2v[1], (float)rgb2v[1], (float)rgb2v[1], (float)rgb2v[1]);
+        __m256 g_rst = _mm256_mul_ps(g_param, g);
+        
+        __m256 b = _mm256_set_ps((float)rgb.b[i], (float)rgb.b[i + 1], (float)rgb.b[i + 2], (float)rgb.b[i + 3], (float)rgb.b[i + 4], (float)rgb.b[i + 5], (float)rgb.b[i + 6], (float)rgb.b[i + 7]);
+        __m256 b_param = _mm256_set_ps((float)rgb2v[2], (float)rgb2v[2], (float)rgb2v[2], (float)rgb2v[2], (float)rgb2v[2], (float)rgb2v[2], (float)rgb2v[2], (float)rgb2v[2]);
+        __m256 b_rst = _mm256_mul_ps(b_param, b);
+        
+        __m256 rst1 = _mm256_add_ps(r_rst, g_rst);
+        __m256 rst2 = _mm256_add_ps(b_rst, rst1);
+        __m256 rst = _mm256_add_ps(rst2, CONST_128);
+        write_back_from_256(rst, tmp_v, i);
     }
     
+    yuv.store_uv(tmp_u, tmp_v);
     _mm_empty();
 }
