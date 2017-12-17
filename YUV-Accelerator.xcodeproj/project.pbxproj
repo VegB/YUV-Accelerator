@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		D1BD22101FE600F9006DF25A /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1BD220F1FE600F9006DF25A /* main.cpp */; };
+		D1BD221B1FE60220006DF25A /* yuv.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1BD22191FE60220006DF25A /* yuv.cpp */; };
+		D1BD221E1FE607E8006DF25A /* rgb.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1BD221C1FE607E8006DF25A /* rgb.cpp */; };
+		D1BD22211FE6088A006DF25A /* image_conversion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1BD221F1FE6088A006DF25A /* image_conversion.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +28,12 @@
 /* Begin PBXFileReference section */
 		D1BD220C1FE600F9006DF25A /* YUV-Accelerator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "YUV-Accelerator"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D1BD220F1FE600F9006DF25A /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		D1BD22191FE60220006DF25A /* yuv.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = yuv.cpp; sourceTree = "<group>"; };
+		D1BD221A1FE60220006DF25A /* yuv.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = yuv.hpp; sourceTree = "<group>"; };
+		D1BD221C1FE607E8006DF25A /* rgb.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = rgb.cpp; sourceTree = "<group>"; };
+		D1BD221D1FE607E8006DF25A /* rgb.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = rgb.hpp; sourceTree = "<group>"; };
+		D1BD221F1FE6088A006DF25A /* image_conversion.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = image_conversion.cpp; sourceTree = "<group>"; };
+		D1BD22201FE6088A006DF25A /* image_conversion.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = image_conversion.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +67,12 @@
 			isa = PBXGroup;
 			children = (
 				D1BD220F1FE600F9006DF25A /* main.cpp */,
+				D1BD22191FE60220006DF25A /* yuv.cpp */,
+				D1BD221A1FE60220006DF25A /* yuv.hpp */,
+				D1BD221C1FE607E8006DF25A /* rgb.cpp */,
+				D1BD221D1FE607E8006DF25A /* rgb.hpp */,
+				D1BD221F1FE6088A006DF25A /* image_conversion.cpp */,
+				D1BD22201FE6088A006DF25A /* image_conversion.hpp */,
 			);
 			path = "YUV-Accelerator";
 			sourceTree = "<group>";
@@ -119,7 +134,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D1BD221B1FE60220006DF25A /* yuv.cpp in Sources */,
+				D1BD22211FE6088A006DF25A /* image_conversion.cpp in Sources */,
 				D1BD22101FE600F9006DF25A /* main.cpp in Sources */,
+				D1BD221E1FE607E8006DF25A /* rgb.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
