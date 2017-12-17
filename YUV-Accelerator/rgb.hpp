@@ -19,17 +19,17 @@ public:
     string name;
     int width;
     int height;
-    uint8_t* r;
-    uint8_t* g;
-    uint8_t* b;
+    unsigned char* r;
+    unsigned char* g;
+    unsigned char* b;
     
     RGBImage(int w, int l, string name_){
         width = w;
         height = l;
         name = name_;
-        r = new uint8_t[width * height];
-        g = new uint8_t[width * height];
-        b = new uint8_t[width * height];
+        r = new unsigned char[width * height];
+        g = new unsigned char[width * height];
+        b = new unsigned char[width * height];
         cout << "RGB Image created!" << endl;
     };
     

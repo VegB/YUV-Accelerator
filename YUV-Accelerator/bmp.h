@@ -1,15 +1,4 @@
-//===============================================================
-//    Name: bmp.h
-//    Description: File header for BMP24-1920*1080(Lab4.1)
-//    Author: Kaihang JI
-//    Last Edit: 12/19/2016 19:01
-//    All rights reserved.
-//================================================================
 
-/*********** *********** *********** *********** *********** *********** ***********
- * definition :struct
- * Description :ŒªÕºŒƒº˛Õ∑
- *********** *********** *********** *********** *********** *********** ***********/
 typedef unsigned short int WORD;
 typedef unsigned int DWORD;
 typedef int LONG;

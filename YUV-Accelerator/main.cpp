@@ -50,12 +50,11 @@ clock_t process_without_simd(){
     yuv2rgb_ori(yuv1, rgb1);
     yuv2rgb_ori(yuv2, rgb2);
     // Output a BMP file from INPUT_YUV_1.toRGB() to see if YUV::yuv2rgb() works correctly.
-    BMP_OUT(OUTPUT_BMP, rgb1);
+    BMP_OUT(OUTPUT_BMP, rgb2);
     
     /* Alpha Blending */
-    for(int alpha = 1; alpha <= 1; alpha += 3){
-        tmp_rgb.alpha_blend_ori(rgb1, alpha);
-        
+    for(int alpha = 1; alpha <= 255; alpha += 3){
+        tmp_rgb.alpha_blend_ori(rgb2, alpha);
         /* RGB2YUV */
         rgb2yuv_ori(tmp_rgb, tmp_yuv);
         /* write to file */
@@ -63,8 +62,8 @@ clock_t process_without_simd(){
     }
     
     /* Superimposing */
-    for(int alpha = 1; alpha <= 0; alpha += 3){
-        tmp_rgb.superimpose_ori(rgb1, rgb2, alpha);
+    for(int alpha = 1; alpha <= 255; alpha += 3){
+        tmp_rgb.superimpose_ori(rgb2, rgb1, alpha);
         /* RGB2YUV */
         rgb2yuv_ori(tmp_rgb, tmp_yuv);
         /* write to file */
@@ -111,6 +110,20 @@ int process_with_avx(){
     return 0;
 }
 
+void check_file_size(){
+    FILE *file=fopen(YUV_filepath1.c_str(),"rb");
+    fseek(file,0,SEEK_END);
+    long long n = ftell(file);
+    cout << "[Main]: Input size: " << n <<endl;
+    fclose(file);
+    
+    file=fopen(alpha_blend_output_filepath.c_str(),"rb");
+    fseek(file,0,SEEK_END);
+    n = ftell(file);
+    cout << "[Main]: Alpha blend output size: " << n <<endl;
+    fclose(file);
+}
+
 int main(int argc, const char * argv[]) {
     /* Read-in file */
     yuv1.read_in_image(YUV_filepath1);
@@ -149,19 +162,6 @@ int main(int argc, const char * argv[]) {
     }
     
     cout << "[Main]: Total time = " << time << endl;
-    
-    
-    FILE *file=fopen(YUV_filepath1.c_str(),"rb");
-    fseek(file,0,SEEK_END);
-    long long n = ftell(file);
-    cout << "[Main]: Input size: " << n <<endl;
-    fclose(file);
-    
-    file=fopen(alpha_blend_output_filepath.c_str(),"rb");
-    fseek(file,0,SEEK_END);
-    n = ftell(file);
-    cout << "[Main]: Alpha blend output size: " << n <<endl;
-    fclose(file);
     
     return 0;
 }

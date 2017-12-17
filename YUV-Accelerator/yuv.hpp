@@ -19,17 +19,17 @@ public:
     string name;
     int width;
     int height;
-    uint8_t* y;
-    uint8_t* u;
-    uint8_t* v;
+    unsigned char* y;
+    unsigned char* u;
+    unsigned char* v;
     
     YUVImage(int w, int l, string name_){
         width = w;
         height = l;
         name = name_;
-        y = new uint8_t[width * height];
-        u = new uint8_t[width * height / 4];
-        v = new uint8_t[width * height / 4];
+        y = new unsigned char[width * height];
+        u = new unsigned char[width * height / 4];
+        v = new unsigned char[width * height / 4];
         cout << "YUV Image created!" << endl;
     };
     

@@ -12,22 +12,17 @@
 void YUVImage::read_in_image(string filename){
     cout << "[" << name << "]: Read in image from " << filename << endl;
     
-    ifstream fin;
-    fin.open(filename);
-    /* read in Y */
-    for(int i = 0; i < width * height; ++i){
-        fin >> y[i];
-        // cout << (int)y[i] << " " << endl;
+    FILE * fp;
+    if ((fp = fopen(filename.c_str(), "rb")) == NULL){
+        cerr << "[" << name << "]: Can not open " << filename << endl;
     }
-    /* read in U */
-    for(int i = 0; i < width * height / 4; ++i){
-        fin >> u[i];
-    }
-    /* read in V */
-    for(int i = 0; i < width * height / 4; ++i){
-        fin >> v[i];
-    }
-    fin.close();
+    char * buf = new char[(unsigned int)(width * height * 1.5)];
+    fread(buf, sizeof(char), width * height * 1.5, fp);
+    fclose(fp);
+    memcpy(y, buf, width * height * sizeof(char));
+    memcpy(u, buf + width * height, width * height * sizeof(char) / 4);
+    memcpy(v, buf + (width * height * 5)/4, width * height * sizeof(char) / 4);
+    delete[] buf;
 }
 
 void YUVImage::init_image(){

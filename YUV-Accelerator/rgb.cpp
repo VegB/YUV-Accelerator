@@ -49,7 +49,7 @@ void RGBImage::superimpose_ori(RGBImage& img1, RGBImage &img2, int alpha){
     tmp_img1.alpha_blend_ori(img1, alpha);
     tmp_img2.alpha_blend_ori(img2, 256 - alpha);
     for(int i = 0, pos = 0; i < height; ++i){
-        for(int j = 0; j < height; ++j, ++pos){
+        for(int j = 0; j < width; ++j, ++pos){
             r[pos] = uint8_t((uint16_t)tmp_img1.r[pos] + (uint16_t)tmp_img2.r[pos]);
             g[pos] = uint8_t((uint16_t)tmp_img1.g[pos] + (uint16_t)tmp_img2.g[pos]);
             b[pos] = uint8_t((uint16_t)tmp_img1.b[pos] + (uint16_t)tmp_img2.b[pos]);
