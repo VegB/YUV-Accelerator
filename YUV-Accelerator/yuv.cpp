@@ -17,7 +17,7 @@ void YUVImage::read_in_image(string filename){
     /* read in Y */
     for(int i = 0; i < width * height; ++i){
         fin >> y[i];
-        cout << y[i] << " ";
+        // cout << (int)y[i] << " " << endl;
     }
     /* read in U */
     for(int i = 0; i < width * height / 4; ++i){

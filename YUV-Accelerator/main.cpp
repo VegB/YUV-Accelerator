@@ -23,7 +23,7 @@ int init_time = -7;
 
 /* Filepath */
 string YUV_filepath1 = "./input/dem1.yuv";
-string YUV_filepath2 = "./input/dem1.yuv";
+string YUV_filepath2 = "./input/dem2.yuv";
 string alpha_blend_output_filepath = "./output/alpha_blend.yuv";
 string superimposing_output_filepath = "./output/superimpose.yuv";
 
@@ -33,7 +33,7 @@ RGBImage rgb1(WIDTH, HEIGHT, "rgb1"), rgb2(WIDTH, HEIGHT, "rgb2");
 
 clock_t process_without_simd(){
     clock_t start_time = 0, end_time = 0;
-    //start_time = clock();
+    start_time = clock();
     cout << "[Main]: Process without SIMD." << endl;
     
     YUVImage tmp_yuv(WIDTH, HEIGHT, "tmp_yuv");
@@ -44,7 +44,7 @@ clock_t process_without_simd(){
     yuv2rgb_ori(yuv2, rgb2);
     
     /* Alpha Blending */
-    for(int alpha = 1; alpha <= 255; ++alpha){
+    for(int alpha = 1; alpha <= 255; alpha += 3){
         tmp_rgb.alpha_blend_ori(rgb1, alpha);
         /* RGB2YUV */
         rgb2yuv_ori(tmp_rgb, tmp_yuv);
@@ -53,7 +53,7 @@ clock_t process_without_simd(){
     }
     
     /* Superimposing */
-    for(int alpha = 1; alpha <= 255; ++alpha){
+    for(int alpha = 1; alpha <= 255; alpha += 3){
         tmp_rgb.superimpose_ori(rgb1, rgb2, alpha);
         /* RGB2YUV */
         rgb2yuv_ori(tmp_rgb, tmp_yuv);
@@ -61,7 +61,7 @@ clock_t process_without_simd(){
         tmp_yuv.write_to_file(superimposing_output_filepath);
     }
     
-    //end_time = clock();
+    end_time = clock();
     return end_time - start_time;
 }
 
