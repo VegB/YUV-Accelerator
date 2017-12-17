@@ -7,6 +7,7 @@
 //
 
 #include "rgb.hpp"
+#include "bmp.h"
 
 /* Set alpha and clear rgb */
 void RGBImage::init_image(){
@@ -52,6 +53,23 @@ void RGBImage::superimpose_ori(RGBImage& img1, RGBImage &img2, int alpha){
             r[pos] = uint8_t((uint16_t)tmp_img1.r[pos] + (uint16_t)tmp_img2.r[pos]);
             g[pos] = uint8_t((uint16_t)tmp_img1.g[pos] + (uint16_t)tmp_img2.g[pos]);
             b[pos] = uint8_t((uint16_t)tmp_img1.b[pos] + (uint16_t)tmp_img2.b[pos]);
+        }
+    }
+}
+
+void RGBImage::write_bmp(FILE* fout) const {
+    t_BMPfileheader file_header;
+    t_BMPinfoheader info_header;
+    uint8_t buf[3];
+    int i, j;
+    fwrite(&file_header, sizeof(t_BMPfileheader), 1, fout);
+    fwrite(&info_header, sizeof(t_BMPinfoheader), 1, fout);
+    for (i = height - 1; i >= 0; i--) {
+        for (j = 0; j<width; j++) {
+            buf[0] = r[i*width + j];
+            buf[1] = g[i*width + j];
+            buf[2] = b[i*width + j];
+            fwrite(buf, sizeof(uint8_t), 3, fout);
         }
     }
 }

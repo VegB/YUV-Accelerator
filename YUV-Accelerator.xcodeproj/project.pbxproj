@@ -34,6 +34,7 @@
 		D1BD221D1FE607E8006DF25A /* rgb.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = rgb.hpp; sourceTree = "<group>"; };
 		D1BD221F1FE6088A006DF25A /* image_conversion.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = image_conversion.cpp; sourceTree = "<group>"; };
 		D1BD22201FE6088A006DF25A /* image_conversion.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = image_conversion.hpp; sourceTree = "<group>"; };
+		D1BD22251FE65063006DF25A /* bmp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bmp.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,6 +74,7 @@
 				D1BD221D1FE607E8006DF25A /* rgb.hpp */,
 				D1BD221F1FE6088A006DF25A /* image_conversion.cpp */,
 				D1BD22201FE6088A006DF25A /* image_conversion.hpp */,
+				D1BD22251FE65063006DF25A /* bmp.h */,
 			);
 			path = "YUV-Accelerator";
 			sourceTree = "<group>";

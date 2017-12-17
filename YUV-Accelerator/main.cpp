@@ -7,7 +7,8 @@
 //
 
 #include <iostream>
-// #include <time.h>
+#include <stdio.h>
+#include <time.h>
 #include "image_conversion.hpp"
 using namespace std;
 
@@ -18,6 +19,12 @@ using namespace std;
 
 #define WIDTH 1920
 #define HEIGHT 1080
+
+// Output a BMP from RGB(u8) for debugging.
+#define OUTPUT_BMP "./output/out.bmp"
+#define BMP_OUT(path, rgb)    do{FILE* bmpout = fopen(path, "wb"); \
+rgb.write_bmp(bmpout); \
+fclose(bmpout);} while(false)
 
 int init_time = -7;
 
@@ -42,10 +49,13 @@ clock_t process_without_simd(){
     /* YUV2RGB */
     yuv2rgb_ori(yuv1, rgb1);
     yuv2rgb_ori(yuv2, rgb2);
+    // Output a BMP file from INPUT_YUV_1.toRGB() to see if YUV::yuv2rgb() works correctly.
+    BMP_OUT(OUTPUT_BMP, rgb1);
     
     /* Alpha Blending */
-    for(int alpha = 1; alpha <= 255; alpha += 3){
+    for(int alpha = 1; alpha <= 1; alpha += 3){
         tmp_rgb.alpha_blend_ori(rgb1, alpha);
+        
         /* RGB2YUV */
         rgb2yuv_ori(tmp_rgb, tmp_yuv);
         /* write to file */
@@ -53,7 +63,7 @@ clock_t process_without_simd(){
     }
     
     /* Superimposing */
-    for(int alpha = 1; alpha <= 255; alpha += 3){
+    for(int alpha = 1; alpha <= 0; alpha += 3){
         tmp_rgb.superimpose_ori(rgb1, rgb2, alpha);
         /* RGB2YUV */
         rgb2yuv_ori(tmp_rgb, tmp_yuv);
@@ -139,5 +149,19 @@ int main(int argc, const char * argv[]) {
     }
     
     cout << "[Main]: Total time = " << time << endl;
+    
+    
+    FILE *file=fopen(YUV_filepath1.c_str(),"rb");
+    fseek(file,0,SEEK_END);
+    long long n = ftell(file);
+    cout << "[Main]: Input size: " << n <<endl;
+    fclose(file);
+    
+    file=fopen(alpha_blend_output_filepath.c_str(),"rb");
+    fseek(file,0,SEEK_END);
+    n = ftell(file);
+    cout << "[Main]: Alpha blend output size: " << n <<endl;
+    fclose(file);
+    
     return 0;
 }

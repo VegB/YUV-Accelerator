@@ -44,6 +44,7 @@ public:
     void init_image();
     void alpha_blend_ori(RGBImage& src, int alpha);
     void superimpose_ori(RGBImage& img1, RGBImage& img2, int alpha);
+    void write_bmp(FILE* fout) const;
 };
 
 #endif /* rgb_hpp */
