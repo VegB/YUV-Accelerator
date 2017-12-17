@@ -24,8 +24,9 @@ void RGBImage::init_image(){
      - alpha: used to set this object to src * alpha
  */
 void RGBImage::alpha_blend_ori(RGBImage& src, int alpha){
+#ifdef LOG
     cout << "[" << name << "]: Alpha blending without SIMD." << endl;
-    
+#endif
     for(int i = 0, pos = 0; i < src.height; ++i){
         for(int j = 0; j < src.width; ++j, ++pos){
             r[pos] = uint8_t((uint16_t)src.r[pos] * alpha >> 8);
@@ -103,8 +104,9 @@ void RGBImage::alpha_blend_avx(RGBImage& src, int alpha_){
      - alpha: during superimposing, img1 has 'alpha' and img2 has '256 - alpha'.
  */
 void RGBImage::superimpose_ori(RGBImage& img1, RGBImage &img2, int alpha){
+#ifdef LOG
     cout << "[" << name << "]: Superimposing without SIMD." << endl;
-    
+#endif
     RGBImage tmp_img1(img1.width, img1.height, "tmp_img1"), tmp_img2(img2.width, img2.height, "tmp_img2");
     tmp_img1.alpha_blend_ori(img1, alpha);
     tmp_img2.alpha_blend_ori(img2, 256 - alpha);

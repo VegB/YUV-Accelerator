@@ -11,8 +11,8 @@ using namespace std;
 
 //#define NO_SIMD
 //#define MMX
-#define SSE2
-//#define AVX
+//#define SSE2
+#define AVX
 
 #define WIDTH 1920
 #define HEIGHT 1080
@@ -59,7 +59,7 @@ clock_t process_without_simd(){
         tmp_yuv.write_to_file(alpha_blend_output_filepath);
     }
     end_time = clock();
-    cout << "[Main]: Alpha blend time without SIMD: " << end_time - start_time << endl;
+    cout << "[Main]: Alpha blend time without SIMD: " << (double)(end_time - start_time) / CLOCKS_PER_SEC << " s"  << endl;
     
     /* ------------------------------------------------------------------------ */
     start_time = clock();
@@ -77,9 +77,9 @@ clock_t process_without_simd(){
         tmp_yuv.write_to_file(superimposing_output_filepath);
     }
     end_time = clock();
-    cout << "[Main]: Superimposing time without SIMD: " << end_time - start_time << endl;
+    cout << "[Main]: Superimposing time without SIMD: " << (double)(end_time - start_time) / CLOCKS_PER_SEC << " s"  << endl;
     
-    return end_time - start_time;
+    return (end_time - start_time);
 }
 
 clock_t process_with_mmx(){
@@ -106,7 +106,7 @@ clock_t process_with_mmx(){
         tmp_yuv.write_to_file(alpha_blend_output_filepath);
     }
     end_time = clock();
-    cout << "[Main]: Alpha blend time with MMX: " << end_time - start_time << endl;
+    cout << "[Main]: Alpha blend time with MMX: " << (double)(end_time - start_time) / CLOCKS_PER_SEC << " s"  << endl;
     
     /* ------------------------------------------------------------------------ */
     start_time = clock();
@@ -124,9 +124,9 @@ clock_t process_with_mmx(){
         tmp_yuv.write_to_file(superimposing_output_filepath);
     }
     end_time = clock();
-    cout << "[Main]: Superimposing time with MMX: " << end_time - start_time << endl;
+    cout << "[Main]: Superimposing time with MMX: " << (double)(end_time - start_time) / CLOCKS_PER_SEC << " s"  << endl;
     
-    return end_time - start_time;
+    return (end_time - start_time);
 }
 
 clock_t process_with_sse2(){
@@ -153,7 +153,7 @@ clock_t process_with_sse2(){
         tmp_yuv.write_to_file(alpha_blend_output_filepath);
     }
     end_time = clock();
-    cout << "[Main]: Alpha blend time with SSE2: " << end_time - start_time << endl;
+    cout << "[Main]: Alpha blend time with SSE2: " << (double)(end_time - start_time) / CLOCKS_PER_SEC << " s"  << endl;
     
     /* ------------------------------------------------------------------------ */
     start_time = clock();
@@ -171,7 +171,7 @@ clock_t process_with_sse2(){
         tmp_yuv.write_to_file(superimposing_output_filepath);
     }
     end_time = clock();
-    cout << "[Main]: Superimposing time with SSE2: " << end_time - start_time << endl;
+    cout << "[Main]: Superimposing time with SSE2: " << (double)(end_time - start_time) / CLOCKS_PER_SEC << " s"  << endl;
     
     return end_time - start_time;
 }
@@ -186,8 +186,8 @@ clock_t process_with_avx(){
     start_time = clock();
     
     /* YUV2RGB */
-    yuv2rgb_avx(yuv1, rgb1);
-    yuv2rgb_avx(yuv2, rgb2);
+    yuv2rgb_ori(yuv1, rgb1);
+    yuv2rgb_ori(yuv2, rgb2);
     // Output a BMP file from INPUT_YUV_1.toRGB() to see if YUV::yuv2rgb() works correctly.
     // BMP_OUT(OUTPUT_BMP, rgb2);
     
@@ -195,12 +195,12 @@ clock_t process_with_avx(){
     for(int alpha = 1; alpha <= 255; alpha += 3){
         tmp_rgb.alpha_blend_avx(rgb2, alpha);
         /* RGB2YUV */
-        rgb2yuv_ori(tmp_rgb, tmp_yuv);
+        rgb2yuv_avx(tmp_rgb, tmp_yuv);
         /* write to file */
         tmp_yuv.write_to_file(alpha_blend_output_filepath);
     }
     end_time = clock();
-    cout << "[Main]: Alpha blend time with AVX: " << end_time - start_time << endl;
+    cout << "[Main]: Alpha blend time with AVX: " << (double)(end_time - start_time) / CLOCKS_PER_SEC << " s"  << endl;
     
     /* ------------------------------------------------------------------------ */
     start_time = clock();
@@ -218,9 +218,9 @@ clock_t process_with_avx(){
         tmp_yuv.write_to_file(superimposing_output_filepath);
     }
     end_time = clock();
-    cout << "[Main]: Superimposing time with AVX: " << end_time - start_time << endl;
+    cout << "[Main]: Superimposing time with AVX: " << (double)(end_time - start_time) / CLOCKS_PER_SEC << " s"  << endl;
     
-    return end_time - start_time;
+    return (end_time - start_time);
 }
 
 void check_file_size(){
