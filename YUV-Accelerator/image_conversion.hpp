@@ -9,15 +9,24 @@
 #ifndef image_conversion_hpp
 #define image_conversion_hpp
 
-#include <iostream>
-#include <string>
+#include "helper.hpp"
 #include "rgb.hpp"
 #include "yuv.hpp"
-
-double clip(int upper_bound, int lower_bound, double ori_num);
 
 /* No optimazation */
 void yuv2rgb_ori(YUVImage& yuv, RGBImage& rgb);
 void rgb2yuv_ori(RGBImage& rgb, YUVImage& yuv);
+
+/* MMX */
+void yuv2rgb_mmx(YUVImage& yuv, RGBImage& rgb);
+void rgb2yuv_mmx(YUVImage& yuv, RGBImage& rgb);
+
+/* SSE2 */
+void yuv2rgb_sse2(YUVImage& yuv, RGBImage& rgb);
+void rgb2yuv_sse2(YUVImage& yuv, RGBImage& rgb);
+
+/* AVX */
+void yuv2rgb_avx(YUVImage& yuv, RGBImage& rgb);
+void rgb2yuv_avx(YUVImage& yuv, RGBImage& rgb);
 
 #endif /* image_conversion_hpp */

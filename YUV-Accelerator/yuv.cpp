@@ -47,3 +47,13 @@ void YUVImage::write_to_file(string filename){
     }
     fout.close();
 }
+
+void YUVImage::get_uv(uint8_t* u_, uint8_t* v_){
+    for (int i = 0, k = 0; i < height; ++i) {
+        for (int j = 0; j < width; ++j, ++k) {
+            int loc = (i / 2)* width / 2 + (j / 2);
+            u_[k] = (int16_t)u[loc];
+            v_[k] = (int16_t)v[loc];
+        }
+    }
+}

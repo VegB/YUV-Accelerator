@@ -11,6 +11,7 @@
 		D1BD221B1FE60220006DF25A /* yuv.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1BD22191FE60220006DF25A /* yuv.cpp */; };
 		D1BD221E1FE607E8006DF25A /* rgb.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1BD221C1FE607E8006DF25A /* rgb.cpp */; };
 		D1BD22211FE6088A006DF25A /* image_conversion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1BD221F1FE6088A006DF25A /* image_conversion.cpp */; };
+		D1BD22281FE6925C006DF25A /* helper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1BD22261FE6925C006DF25A /* helper.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -35,6 +36,8 @@
 		D1BD221F1FE6088A006DF25A /* image_conversion.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = image_conversion.cpp; sourceTree = "<group>"; };
 		D1BD22201FE6088A006DF25A /* image_conversion.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = image_conversion.hpp; sourceTree = "<group>"; };
 		D1BD22251FE65063006DF25A /* bmp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bmp.h; sourceTree = "<group>"; };
+		D1BD22261FE6925C006DF25A /* helper.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = helper.cpp; sourceTree = "<group>"; };
+		D1BD22271FE6925C006DF25A /* helper.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = helper.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,6 +78,8 @@
 				D1BD221F1FE6088A006DF25A /* image_conversion.cpp */,
 				D1BD22201FE6088A006DF25A /* image_conversion.hpp */,
 				D1BD22251FE65063006DF25A /* bmp.h */,
+				D1BD22261FE6925C006DF25A /* helper.cpp */,
+				D1BD22271FE6925C006DF25A /* helper.hpp */,
 			);
 			path = "YUV-Accelerator";
 			sourceTree = "<group>";
@@ -138,6 +143,7 @@
 			files = (
 				D1BD221B1FE60220006DF25A /* yuv.cpp in Sources */,
 				D1BD22211FE6088A006DF25A /* image_conversion.cpp in Sources */,
+				D1BD22281FE6925C006DF25A /* helper.cpp in Sources */,
 				D1BD22101FE600F9006DF25A /* main.cpp in Sources */,
 				D1BD221E1FE607E8006DF25A /* rgb.cpp in Sources */,
 			);
