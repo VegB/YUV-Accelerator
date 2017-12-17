@@ -1,37 +1,32 @@
-
 typedef unsigned short int WORD;
 typedef unsigned int DWORD;
 typedef int LONG;
 typedef unsigned char BYTE;
 
-#pragma pack(1)/////////////////Ω´Ω·ππÃÂ÷–≥…‘±∞¥n◊÷Ω⁄∂‘∆Î
+#pragma pack(1)
 
 typedef struct tagBITMAPFILEHEADER
 {
-    WORD bfType = 19778;////////////////Œƒº˛¿‡–Õ£¨±ÿ–ÎŒ™BM
-    DWORD bfSize = 6220854;///////////////÷∏∂®Œƒº˛¥Û–°£¨“‘◊÷Ω⁄Œ™µ•Œª£®3-6◊÷Ω⁄£¨µÕŒª‘⁄«∞£©
-    WORD bfReserved1 = 0;///////////Œƒº˛±£¡Ù◊÷£¨±ÿ–ÎŒ™0
-    WORD bfReserved2 = 0;///////////Œƒº˛±£¡Ù◊÷£¨±ÿ–ÎŒ™0
-    DWORD bfOffBits = 54;////////////¥”Œƒº˛Õ∑µΩ µº ŒªÕº ˝æ›µƒ∆´“∆◊÷Ω⁄ ˝£®11-14◊÷Ω⁄£¨µÕŒª‘⁄«∞£©
+    WORD bfType = 19778;
+    DWORD bfSize = 6220854;
+    WORD bfReserved1 = 0;
+    WORD bfReserved2 = 0;
+    DWORD bfOffBits = 54;
 }t_BMPfileheader;
-/*********** *********** *********** *********** *********** *********** ***********
- * definition :struct
- * Description :ŒªÕº–≈œ¢Õ∑
- *********** *********** *********** *********** *********** *********** ***********/
+
+
 typedef struct tagBITMAPINFOHEADER
 {
-    DWORD biSize = 40;///////////////±æΩ·ππÀ˘’º”√◊÷Ω⁄ ˝£¨Œ™40°£◊¢“‚£∫ µº ≤Ÿ◊˜÷–‘Ú”–44£¨’‚ «◊÷Ω⁄≤π∆Îµƒ‘≠“Ú
-    LONG biWidth = 1920;///////////////ŒªÕºµƒøÌ∂»£¨“‘œÒÀÿŒ™µ•Œª
-    LONG biHeight = 1080;//////////////ŒªÕºµƒ∏ﬂ∂»£¨“‘œÒÀÿŒ™µ•Œª
-    WORD biPlanes = 1;//////////////ƒø±Í…Ë±∏µƒº∂±£¨±ÿ–ÎŒ™1
-    WORD biBitCount = 24;////////////√ø∏ˆœÒÀÿÀ˘–ËµƒŒª ˝£¨1£®À´…´£©£¨4(16…´£©£¨8(256…´£©16(∏ﬂ≤ …´)£¨24£®’Ê≤ …´£©ªÚ32÷Æ“ª
-    DWORD biCompression = 0;////////ŒªÕº—πÀı¿‡–Õ£¨0£®≤ª—πÀı£©£¨1(BI_RLE8—πÀı¿‡–Õ£©ªÚ2(BI_RLE4—πÀı¿‡–Õ£©÷Æ“ª
-    DWORD biSizeImage = 6220800;//////////ŒªÕºµƒ¥Û–°(∆‰÷–∞¸∫¨¡ÀŒ™¡À≤π∆Î–– ˝ «4µƒ±∂ ˝∂¯ÃÌº”µƒø’◊÷Ω⁄)£¨“‘◊÷Ω⁄Œ™µ•Œª
-    LONG biXPelsPerMeter = 2835;///////ŒªÕºÀÆ∆Ω∑÷±Ê¬ £¨√ø√◊œÒÀÿ ˝
-    LONG biYPelsPerMeter = 2835;///////ŒªÕº¥π÷±∑÷±Ê¬ £¨√ø√◊œÒÀÿ ˝
-    DWORD biClrUsed = 0;////////////ŒªÕº µº  π”√µƒ—’…´±Ì÷–µƒ—’…´ ˝£¨»Ù∏√÷µŒ™0,‘Ú π”√—’…´ ˝Œ™2µƒbiBitCount¥Œ∑Ω
-    DWORD biClrImportant = 0;///////ŒªÕºœ‘ æπ˝≥Ã÷–÷ÿ“™µƒ—’…´ ˝£¨»Ù∏√÷µŒ™0,‘ÚÀ˘”–µƒ—’…´∂º÷ÿ“™
+    DWORD biSize = 40;
+    LONG biWidth = 1920;
+    LONG biHeight = 1080;
+    WORD biPlanes = 1;
+    WORD biBitCount = 24;
+    DWORD biCompression = 0;
+    DWORD biSizeImage = 6220800;
+    LONG biXPelsPerMeter = 2835;
+    LONG biYPelsPerMeter = 2835;
+    DWORD biClrUsed = 0;
+    DWORD biClrImportant = 0;
 }t_BMPinfoheader;
-#pragma pack()//////////////////»°œ˚◊‘∂®“Â◊÷Ω⁄∑Ω Ω
-// End of bmp.h
-
+#pragma pack()
