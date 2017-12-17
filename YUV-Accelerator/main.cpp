@@ -6,16 +6,13 @@
 //  Copyright © 2017 朱芄蓉. All rights reserved.
 //
 
-#include <iostream>
-#include <stdio.h>
-#include <time.h>
 #include "image_conversion.hpp"
 using namespace std;
 
 //#define NO_SIMD
-#define MMX
+//#define MMX
 //#define SSE2
-//#define AVX
+#define AVX
 
 #define WIDTH 1920
 #define HEIGHT 1080
@@ -95,8 +92,8 @@ clock_t process_with_mmx(){
     start_time = clock();
     
     /* YUV2RGB */
-    yuv2rgb_ori(yuv1, rgb1);
-    yuv2rgb_ori(yuv2, rgb2);
+    yuv2rgb_mmx(yuv1, rgb1);
+    yuv2rgb_mmx(yuv2, rgb2);
     // Output a BMP file from INPUT_YUV_1.toRGB() to see if YUV::yuv2rgb() works correctly.
     // BMP_OUT(OUTPUT_BMP, rgb2);
 
@@ -132,28 +129,98 @@ clock_t process_with_mmx(){
     return end_time - start_time;
 }
 
-int process_with_sse2(){
+clock_t process_with_sse2(){
+    clock_t start_time = 0, end_time = 0;
+    cout << "[Main]: Process with SSE2." << endl;
+    
+    YUVImage tmp_yuv(WIDTH, HEIGHT, "tmp_yuv");
+    RGBImage tmp_rgb(WIDTH, HEIGHT, "tmp_rgb");
+    
+    start_time = clock();
+    
     /* YUV2RGB */
+    yuv2rgb_sse2(yuv1, rgb1);
+    yuv2rgb_sse2(yuv2, rgb2);
+    // Output a BMP file from INPUT_YUV_1.toRGB() to see if YUV::yuv2rgb() works correctly.
+    // BMP_OUT(OUTPUT_BMP, rgb2);
     
     /* Alpha Blending */
+    for(int alpha = 1; alpha <= 255; alpha += 3){
+        tmp_rgb.alpha_blend_sse2(rgb2, alpha);
+        /* RGB2YUV */
+        rgb2yuv_sse2(tmp_rgb, tmp_yuv);
+        /* write to file */
+        tmp_yuv.write_to_file(alpha_blend_output_filepath);
+    }
+    end_time = clock();
+    cout << "[Main]: Alpha blend time with SSE2: " << end_time - start_time << endl;
+    
+    /* ------------------------------------------------------------------------ */
+    start_time = clock();
+    
+    /* YUV2RGB */
+    yuv2rgb_sse2(yuv1, rgb1);
+    yuv2rgb_sse2(yuv2, rgb2);
     
     /* Superimposing */
+    for(int alpha = 1; alpha <= 255; alpha += 3){
+        tmp_rgb.superimpose_sse2(rgb2, rgb1, alpha);
+        /* RGB2YUV */
+        rgb2yuv_sse2(tmp_rgb, tmp_yuv);
+        /* write to file */
+        tmp_yuv.write_to_file(superimposing_output_filepath);
+    }
+    end_time = clock();
+    cout << "[Main]: Superimposing time with SSE2: " << end_time - start_time << endl;
     
-    /* RGB2YUV */
-    
-    return 0;
+    return end_time - start_time;
 }
 
-int process_with_avx(){
+clock_t process_with_avx(){
+    clock_t start_time = 0, end_time = 0;
+    cout << "[Main]: Process with AVX." << endl;
+    
+    YUVImage tmp_yuv(WIDTH, HEIGHT, "tmp_yuv");
+    RGBImage tmp_rgb(WIDTH, HEIGHT, "tmp_rgb");
+    
+    start_time = clock();
+    
     /* YUV2RGB */
+    yuv2rgb_ori(yuv1, rgb1);
+    yuv2rgb_ori(yuv2, rgb2);
+    // Output a BMP file from INPUT_YUV_1.toRGB() to see if YUV::yuv2rgb() works correctly.
+    // BMP_OUT(OUTPUT_BMP, rgb2);
     
     /* Alpha Blending */
+    for(int alpha = 1; alpha <= 255; alpha += 3){
+        tmp_rgb.alpha_blend_avx(rgb2, alpha);
+        /* RGB2YUV */
+        rgb2yuv_ori(tmp_rgb, tmp_yuv);
+        /* write to file */
+        tmp_yuv.write_to_file(alpha_blend_output_filepath);
+    }
+    end_time = clock();
+    cout << "[Main]: Alpha blend time with AVX: " << end_time - start_time << endl;
+    
+    /* ------------------------------------------------------------------------ */
+    start_time = clock();
+    
+    /* YUV2RGB */
+    yuv2rgb_ori(yuv1, rgb1);
+    yuv2rgb_ori(yuv2, rgb2);
     
     /* Superimposing */
+    for(int alpha = 1; alpha <= 255; alpha += 3){
+        tmp_rgb.superimpose_avx(rgb2, rgb1, alpha);
+        /* RGB2YUV */
+        rgb2yuv_ori(tmp_rgb, tmp_yuv);
+        /* write to file */
+        tmp_yuv.write_to_file(superimposing_output_filepath);
+    }
+    end_time = clock();
+    cout << "[Main]: Superimposing time with AVX: " << end_time - start_time << endl;
     
-    /* RGB2YUV */
-    
-    return 0;
+    return end_time - start_time;
 }
 
 void check_file_size(){
@@ -206,8 +273,6 @@ int main(int argc, const char * argv[]) {
         cerr << "[Main]: Mode undefined!" << endl;
         return 0;
     }
-    
-    cout << "[Main]: Total time = " << time << endl;
     
     return 0;
 }

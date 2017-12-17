@@ -19,14 +19,14 @@ void rgb2yuv_ori(RGBImage& rgb, YUVImage& yuv);
 
 /* MMX */
 void yuv2rgb_mmx(YUVImage& yuv, RGBImage& rgb);
-void rgb2yuv_mmx(YUVImage& yuv, RGBImage& rgb);
+void rgb2yuv_mmx(RGBImage& rgb, YUVImage& yuv);
 
 /* SSE2 */
 void yuv2rgb_sse2(YUVImage& yuv, RGBImage& rgb);
-void rgb2yuv_sse2(YUVImage& yuv, RGBImage& rgb);
+void rgb2yuv_sse2(RGBImage& rgb, YUVImage& yuv);
 
 /* AVX */
 void yuv2rgb_avx(YUVImage& yuv, RGBImage& rgb);
-void rgb2yuv_avx(YUVImage& yuv, RGBImage& rgb);
+void rgb2yuv_avx(RGBImage& rgb, YUVImage& yuv);
 
 #endif /* image_conversion_hpp */

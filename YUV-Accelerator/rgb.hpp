@@ -50,6 +50,10 @@ public:
     void write_bmp(FILE* fout) const;
     void single_color_blend_mmx(uint8_t*src, uint8_t* dst, int pos, __m64 alpha);
     void single_color_impose_mmx(uint8_t* src1, uint8_t* src2, uint8_t* dst, int pos);
+    void single_color_blend_sse2(uint8_t*src, uint8_t* dst, int pos, __m128 alpha);
+    void single_color_impose_sse2(uint8_t* src1, uint8_t* src2, uint8_t* dst, int pos);
+    void single_color_blend_avx(uint8_t*src, uint8_t* dst, int pos, __m256 alpha);
+    void single_color_impose_avx(uint8_t* src1, uint8_t* src2, uint8_t* dst, int pos);
 };
 
 #endif /* rgb_hpp */

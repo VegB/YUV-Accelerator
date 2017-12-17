@@ -10,8 +10,9 @@
 #include "yuv.hpp"
 
 void YUVImage::read_in_image(string filename){
+#ifdef LOG
     cout << "[" << name << "]: Read in image from " << filename << endl;
-    
+#endif
     FILE * fp;
     if ((fp = fopen(filename.c_str(), "rb")) == NULL){
         cerr << "[" << name << "]: Can not open " << filename << endl;
@@ -32,8 +33,9 @@ void YUVImage::init_image(){
 }
 
 void YUVImage::write_to_file(string filename){
+#ifdef LOG
     cout << "[" << name << "]: writing image to " << filename << endl;
-    
+#endif
     ofstream fout;
     fout.open(filename, ofstream::out | ofstream::app);
     for(int i = 0; i < width * height; ++i){
