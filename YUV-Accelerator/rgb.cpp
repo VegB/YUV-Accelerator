@@ -29,18 +29,21 @@ void RGBImage::alpha_blend_ori(RGBImage& src, int alpha){
 #endif
     for(int i = 0, pos = 0; i < src.height; ++i){
         for(int j = 0; j < src.width; ++j, ++pos){
-            r[pos] = uint8_t((uint16_t)src.r[pos] * alpha >> 8);
-            g[pos] = uint8_t((uint16_t)src.g[pos] * alpha >> 8);
-            b[pos] = uint8_t((uint16_t)src.b[pos] * alpha >> 8);
+//            r[pos] = uint8_t((uint16_t)src.r[pos] * alpha >> 8);
+//            g[pos] = uint8_t((uint16_t)src.g[pos] * alpha >> 8);
+//            b[pos] = uint8_t((uint16_t)src.b[pos] * alpha >> 8);
+            r[pos] = uint8_t((double)src.r[pos] * alpha / 256.0001);
+            g[pos] = uint8_t((double)src.g[pos] * alpha / 256.0001);
+            b[pos] = uint8_t((double)src.b[pos] * alpha / 256.0001);
         }
     }
 }
 
-void RGBImage::single_color_blend_mmx(uint8_t*src, uint8_t* dst, int pos, __m64 alpha){
+inline void RGBImage::single_color_blend_mmx(uint8_t*src, uint8_t* dst, int pos, __m64 alpha){
     __m64 color = _mm_set_pi16((int16_t)src[pos], (int16_t)src[pos + 1], (int16_t)src[pos + 2], (int16_t)src[pos + 3]);
     __m64 rst = _m_pmullw(color, alpha);  // r/g/b * alpha
     __m64 rst2 = _mm_srli_pi16(rst, 8);  // r/g/b / 256
-    write_back_from_64(rst2, dst, pos);
+    write_back_mmx(rst2, dst, pos);
 #ifdef DEBUG
 //    cout << "alpha: ";
 //    print_64(alpha);
@@ -62,12 +65,12 @@ void RGBImage::alpha_blend_mmx(RGBImage& src, int alpha_){
     }
 }
 
-void RGBImage::single_color_blend_sse2(uint8_t*src, uint8_t* dst, int pos, __m128 alpha){
+inline void RGBImage::single_color_blend_sse2(uint8_t*src, uint8_t* dst, int pos, __m128 alpha){
     __m128 color = _mm_set_ps((float)src[pos + 3], (float)src[pos + 2], (float)src[pos + 1], (float)src[pos]);
     __m128 CONST_256 = _mm_set_ps((float)256, (float)256, (float)256, (float)256);
     __m128 rst = _mm_mul_ps(color, alpha);  // r/g/b * alpha
     __m128 rst2 = _mm_div_ps(rst, CONST_256);  // r/g/b / 256
-    write_back_from_128(rst2, dst, pos);
+    write_back_sse2(rst2, dst, pos);
 }
 
 void RGBImage::alpha_blend_sse2(RGBImage& src, int alpha_){
@@ -79,12 +82,12 @@ void RGBImage::alpha_blend_sse2(RGBImage& src, int alpha_){
     }
 }
 
-void RGBImage::single_color_blend_avx(uint8_t*src, uint8_t* dst, int pos, __m256 alpha){
+inline void RGBImage::single_color_blend_avx(uint8_t*src, uint8_t* dst, int pos, __m256 alpha){
     __m256 color = _mm256_set_ps((float)src[pos], (float)src[pos + 1], (float)src[pos + 2], (float)src[pos + 3], (float)src[pos + 4], (float)src[pos + 5], (float)src[pos + 6], (float)src[pos + 7]);
     __m256 CONST_256 = _mm256_set_ps((float)256, (float)256, (float)256, (float)256, (float)256, (float)256, (float)256, (float)256);
     __m256 rst = _mm256_mul_ps(color, alpha);  // r/g/b * alpha
     __m256 rst2 = _mm256_div_ps(rst, CONST_256);  // r/g/b / 256
-    write_back_from_256(rst2, dst, pos);
+    write_back_avx(rst2, dst, pos);
 }
 
 void RGBImage::alpha_blend_avx(RGBImage& src, int alpha_){
@@ -111,17 +114,17 @@ void RGBImage::superimpose_ori(RGBImage& img1, RGBImage &img2, int alpha){
     tmp_img1.alpha_blend_ori(img1, alpha);
     tmp_img2.alpha_blend_ori(img2, 256 - alpha);
     for(int pos = 0; pos < img1.width * img1.height; ++pos){
-        r[pos] = uint8_t((uint16_t)tmp_img1.r[pos] + (uint16_t)tmp_img2.r[pos]);
-        g[pos] = uint8_t((uint16_t)tmp_img1.g[pos] + (uint16_t)tmp_img2.g[pos]);
-        b[pos] = uint8_t((uint16_t)tmp_img1.b[pos] + (uint16_t)tmp_img2.b[pos]);
+        r[pos] = uint8_t((double)tmp_img1.r[pos] + (double)tmp_img2.r[pos]);
+        g[pos] = uint8_t((double)tmp_img1.g[pos] + (double)tmp_img2.g[pos]);
+        b[pos] = uint8_t((double)tmp_img1.b[pos] + (double)tmp_img2.b[pos]);
     }
 }
 
-void RGBImage::single_color_impose_mmx(uint8_t* src1, uint8_t* src2, uint8_t* dst, int pos){
+inline void RGBImage::single_color_impose_mmx(uint8_t* src1, uint8_t* src2, uint8_t* dst, int pos){
     __m64 num1 = _mm_set_pi16((int16_t)src1[pos], (int16_t)src1[pos + 1], (int16_t)src1[pos + 2],(int16_t)src1[pos + 3]);
     __m64 num2 = _mm_set_pi16((int16_t)src2[pos], (int16_t)src2[pos + 1], (int16_t)src2[pos + 2],(int16_t)src2[pos + 3]);
     __m64 rst = _m_paddw(num1, num2);
-    write_back_from_64(rst, dst, pos);
+    write_back_mmx(rst, dst, pos);
 }
 
 void RGBImage::superimpose_mmx(RGBImage& img1, RGBImage& img2, int alpha){
@@ -135,11 +138,11 @@ void RGBImage::superimpose_mmx(RGBImage& img1, RGBImage& img2, int alpha){
     }
 }
 
-void RGBImage::single_color_impose_sse2(uint8_t* src1, uint8_t* src2, uint8_t* dst, int pos){
+inline void RGBImage::single_color_impose_sse2(uint8_t* src1, uint8_t* src2, uint8_t* dst, int pos){
     __m128 num1 = _mm_set_ps((float)src1[pos], (float)src1[pos + 1], (float)src1[pos + 2], (float)src1[pos + 3]);
     __m128 num2 = _mm_set_ps((float)src2[pos], (float)src2[pos + 1], (float)src2[pos + 2], (float)src2[pos + 3]);
     __m128 rst = _mm_add_ps(num1, num2);
-    write_back_from_128(rst, dst, pos);
+    write_back_sse2(rst, dst, pos);
 }
 
 void RGBImage::superimpose_sse2(RGBImage& img1, RGBImage& img2, int alpha){
@@ -153,11 +156,11 @@ void RGBImage::superimpose_sse2(RGBImage& img1, RGBImage& img2, int alpha){
     }
 }
 
-void RGBImage::single_color_impose_avx(uint8_t* src1, uint8_t* src2, uint8_t* dst, int pos){
+inline void RGBImage::single_color_impose_avx(uint8_t* src1, uint8_t* src2, uint8_t* dst, int pos){
     __m256 num1 = _mm256_set_ps((float)src1[pos], (float)src1[pos + 1], (float)src1[pos + 2], (float)src1[pos + 3], (float)src1[pos + 4], (float)src1[pos + 5], (float)src1[pos + 6], (float)src1[pos + 7]);
     __m256 num2 = _mm256_set_ps((float)src2[pos], (float)src2[pos + 1], (float)src2[pos + 2], (float)src2[pos + 3], (float)src2[pos + 4], (float)src2[pos + 5], (float)src2[pos + 6], (float)src2[pos + 7]);
     __m256 rst = _mm256_add_ps(num1, num2);
-    write_back_from_256(rst, dst, pos);
+    write_back_avx(rst, dst, pos);
 }
 
 void RGBImage::superimpose_avx(RGBImage& img1, RGBImage& img2, int alpha){

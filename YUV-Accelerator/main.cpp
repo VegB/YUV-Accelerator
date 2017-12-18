@@ -42,42 +42,53 @@ clock_t process_without_simd(){
     YUVImage tmp_yuv(WIDTH, HEIGHT, "tmp_yuv");
     RGBImage tmp_rgb(WIDTH, HEIGHT, "tmp_rgb");
     
-    start_time = clock();
+    clock_t time1 = 0, time2 = 0;
     
     /* YUV2RGB */
+    start_time = clock();
     yuv2rgb_ori(yuv1, rgb1);
     yuv2rgb_ori(yuv2, rgb2);
     // Output a BMP file from INPUT_YUV_1.toRGB() to see if YUV::yuv2rgb() works correctly.
     // BMP_OUT(OUTPUT_BMP, rgb2);
+    end_time = clock();
+    time1 += end_time - start_time;
     
     /* Alpha Blending */
     for(int alpha = 1; alpha <= 255; alpha += 3){
+        start_time = clock();
         tmp_rgb.alpha_blend_ori(rgb2, alpha);
         /* RGB2YUV */
         rgb2yuv_ori(tmp_rgb, tmp_yuv);
+        end_time = clock();
+        time1 += end_time - start_time;
+        
         /* write to file */
         tmp_yuv.write_to_file(alpha_blend_output_filepath);
     }
-    end_time = clock();
-    cout << "[Main]: Alpha blend time without SIMD: " << (double)(end_time - start_time) / CLOCKS_PER_SEC << " s"  << endl;
+    cout << "[Main]: alpha blending without SIMD: " << (double)time1 / CLOCKS_PER_SEC << " s"  << endl;
     
     /* ------------------------------------------------------------------------ */
-    start_time = clock();
     
     /* YUV2RGB */
+    start_time = clock();
     yuv2rgb_ori(yuv1, rgb1);
     yuv2rgb_ori(yuv2, rgb2);
+    end_time = clock();
+    time2 += end_time - start_time;
     
     /* Superimposing */
     for(int alpha = 1; alpha <= 255; alpha += 3){
+        start_time = clock();
         tmp_rgb.superimpose_ori(rgb2, rgb1, alpha);
         /* RGB2YUV */
         rgb2yuv_ori(tmp_rgb, tmp_yuv);
+        end_time = clock();
+        time2 += end_time - start_time;
+        
         /* write to file */
         tmp_yuv.write_to_file(superimposing_output_filepath);
     }
-    end_time = clock();
-    cout << "[Main]: Superimposing time without SIMD: " << (double)(end_time - start_time) / CLOCKS_PER_SEC << " s"  << endl;
+    cout << "[Main]: superimposing without SIMD: " << (double)time2 / CLOCKS_PER_SEC << " s"  << endl;
     
     return (end_time - start_time);
 }
@@ -89,42 +100,51 @@ clock_t process_with_mmx(){
     YUVImage tmp_yuv(WIDTH, HEIGHT, "tmp_yuv");
     RGBImage tmp_rgb(WIDTH, HEIGHT, "tmp_rgb");
     
-    start_time = clock();
+    clock_t time1 = 0, time2 = 0;
     
     /* YUV2RGB */
-    yuv2rgb_mmx(yuv1, rgb1);
-    yuv2rgb_mmx(yuv2, rgb2);
+    start_time = clock();
+    yuv2rgb_ori(yuv1, rgb1);
+    yuv2rgb_ori(yuv2, rgb2);
     // Output a BMP file from INPUT_YUV_1.toRGB() to see if YUV::yuv2rgb() works correctly.
     // BMP_OUT(OUTPUT_BMP, rgb2);
-
+    end_time = clock();
+    time1 += end_time - start_time;
+    
     /* Alpha Blending */
     for(int alpha = 1; alpha <= 255; alpha += 3){
+        start_time = clock();
         tmp_rgb.alpha_blend_mmx(rgb2, alpha);
         /* RGB2YUV */
         rgb2yuv_ori(tmp_rgb, tmp_yuv);
+        end_time = clock();
+        time1 += end_time - start_time;
+        
         /* write to file */
         tmp_yuv.write_to_file(alpha_blend_output_filepath);
     }
-    end_time = clock();
-    cout << "[Main]: Alpha blend time with MMX: " << (double)(end_time - start_time) / CLOCKS_PER_SEC << " s"  << endl;
-    
+    cout << "[Main]: Alpha blend time with MMX: " << (double)time1 / CLOCKS_PER_SEC << " s"  << endl;
     /* ------------------------------------------------------------------------ */
-    start_time = clock();
     
     /* YUV2RGB */
+    start_time = clock();
     yuv2rgb_ori(yuv1, rgb1);
     yuv2rgb_ori(yuv2, rgb2);
+    end_time = clock();
+    time2 += end_time - start_time;
     
     /* Superimposing */
     for(int alpha = 1; alpha <= 255; alpha += 3){
+        start_time = clock();
         tmp_rgb.superimpose_mmx(rgb2, rgb1, alpha);
         /* RGB2YUV */
         rgb2yuv_ori(tmp_rgb, tmp_yuv);
+        end_time = clock();
+        time2 += end_time - start_time;
         /* write to file */
         tmp_yuv.write_to_file(superimposing_output_filepath);
     }
-    end_time = clock();
-    cout << "[Main]: Superimposing time with MMX: " << (double)(end_time - start_time) / CLOCKS_PER_SEC << " s"  << endl;
+    cout << "[Main]: Superimposing with MMX: " << (double)time2 / CLOCKS_PER_SEC << " s"  << endl;
     
     return (end_time - start_time);
 }
@@ -136,42 +156,51 @@ clock_t process_with_sse2(){
     YUVImage tmp_yuv(WIDTH, HEIGHT, "tmp_yuv");
     RGBImage tmp_rgb(WIDTH, HEIGHT, "tmp_rgb");
     
+    clock_t time1 = 0, time2 = 0;
     start_time = clock();
-    
     /* YUV2RGB */
     yuv2rgb_sse2(yuv1, rgb1);
     yuv2rgb_sse2(yuv2, rgb2);
     // Output a BMP file from INPUT_YUV_1.toRGB() to see if YUV::yuv2rgb() works correctly.
     // BMP_OUT(OUTPUT_BMP, rgb2);
+    end_time = clock();
+    time1 += end_time -start_time;
     
     /* Alpha Blending */
     for(int alpha = 1; alpha <= 255; alpha += 3){
+        start_time = clock();
         tmp_rgb.alpha_blend_sse2(rgb2, alpha);
         /* RGB2YUV */
         rgb2yuv_sse2(tmp_rgb, tmp_yuv);
+        end_time = clock();
+        time1 += end_time - start_time;
+        
         /* write to file */
         tmp_yuv.write_to_file(alpha_blend_output_filepath);
     }
-    end_time = clock();
-    cout << "[Main]: Alpha blend time with SSE2: " << (double)(end_time - start_time) / CLOCKS_PER_SEC << " s"  << endl;
+    cout << "[Main]: Alpha blend time with SSE2: " << (double)time1 / CLOCKS_PER_SEC << " s"  << endl;
     
     /* ------------------------------------------------------------------------ */
-    start_time = clock();
     
     /* YUV2RGB */
+    start_time = clock();
     yuv2rgb_sse2(yuv1, rgb1);
     yuv2rgb_sse2(yuv2, rgb2);
+    end_time = clock();
+    time2 += end_time - start_time;
     
     /* Superimposing */
     for(int alpha = 1; alpha <= 255; alpha += 3){
+        start_time = clock();
         tmp_rgb.superimpose_sse2(rgb2, rgb1, alpha);
         /* RGB2YUV */
         rgb2yuv_sse2(tmp_rgb, tmp_yuv);
+        end_time = clock();
+        time2 += end_time - start_time;
         /* write to file */
         tmp_yuv.write_to_file(superimposing_output_filepath);
     }
-    end_time = clock();
-    cout << "[Main]: Superimposing time with SSE2: " << (double)(end_time - start_time) / CLOCKS_PER_SEC << " s"  << endl;
+    cout << "[Main]: Superimposing with SSE2: " << (double)time2 / CLOCKS_PER_SEC << " s"  << endl;
     
     return end_time - start_time;
 }
@@ -183,43 +212,51 @@ clock_t process_with_avx(){
     YUVImage tmp_yuv(WIDTH, HEIGHT, "tmp_yuv");
     RGBImage tmp_rgb(WIDTH, HEIGHT, "tmp_rgb");
     
+    clock_t time1 = 0, time2 = 0;
     start_time = clock();
-    
-    /* YUV2RGB */
-    yuv2rgb_ori(yuv1, rgb1);
-    yuv2rgb_ori(yuv2, rgb2);
-    // Output a BMP file from INPUT_YUV_1.toRGB() to see if YUV::yuv2rgb() works correctly.
-    // BMP_OUT(OUTPUT_BMP, rgb2);
-    
-    /* Alpha Blending */
-    for(int alpha = 1; alpha <= 255; alpha += 3){
-        tmp_rgb.alpha_blend_avx(rgb2, alpha);
-        /* RGB2YUV */
-        rgb2yuv_avx(tmp_rgb, tmp_yuv);
-        /* write to file */
-        tmp_yuv.write_to_file(alpha_blend_output_filepath);
-    }
-    end_time = clock();
-    cout << "[Main]: Alpha blend time with AVX: " << (double)(end_time - start_time) / CLOCKS_PER_SEC << " s"  << endl;
-    
-    /* ------------------------------------------------------------------------ */
-    start_time = clock();
-    
     /* YUV2RGB */
     yuv2rgb_avx(yuv1, rgb1);
     yuv2rgb_avx(yuv2, rgb2);
+    // Output a BMP file from INPUT_YUV_1.toRGB() to see if YUV::yuv2rgb() works correctly.
+    // BMP_OUT(OUTPUT_BMP, rgb2);
+    end_time = clock();
+    time1 += end_time - start_time;
+    
+    /* Alpha Blending */
+    for(int alpha = 1; alpha <= 255; alpha += 3){
+        start_time = clock();
+        tmp_rgb.alpha_blend_avx(rgb2, alpha);
+        /* RGB2YUV */
+        rgb2yuv_avx(tmp_rgb, tmp_yuv);
+        end_time = clock();
+        time1 += end_time - start_time;
+        
+        /* write to file */
+        tmp_yuv.write_to_file(alpha_blend_output_filepath);
+    }
+    cout << "[Main]: Alpha blend time with AVX: " << (double)time1 / CLOCKS_PER_SEC << " s"  << endl;
+    
+    /* ------------------------------------------------------------------------ */
+
+    /* YUV2RGB */
+    start_time = clock();
+    yuv2rgb_avx(yuv1, rgb1);
+    yuv2rgb_avx(yuv2, rgb2);
+    end_time = clock();
+    time2 += end_time - start_time;
     
     /* Superimposing */
     for(int alpha = 1; alpha <= 255; alpha += 3){
+        start_time = clock();
         tmp_rgb.superimpose_avx(rgb2, rgb1, alpha);
         /* RGB2YUV */
         rgb2yuv_ori(tmp_rgb, tmp_yuv);
+        end_time = clock();
+        time2 += end_time - start_time;
         /* write to file */
         tmp_yuv.write_to_file(superimposing_output_filepath);
     }
-    end_time = clock();
-    cout << "[Main]: Superimposing time with AVX: " << (double)(end_time - start_time) / CLOCKS_PER_SEC << " s"  << endl;
-    
+    cout << "[Main]: Superimposing with AVX: " << (double)time2 / CLOCKS_PER_SEC << " s"  << endl;
     return (end_time - start_time);
 }
 

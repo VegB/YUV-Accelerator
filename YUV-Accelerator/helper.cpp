@@ -8,16 +8,7 @@
 
 #include "helper.hpp"
 
-/* clip num to [lower_bound, upper_bound] */
-double clip(int lower_bound, int upper_bound, double num){
-    if(num > upper_bound){
-        num = upper_bound;
-    }
-    if(num < lower_bound){
-        num = lower_bound;
-    }
-    return num;
-}
+
 
 void print_64(__m64 num){
     int16_t* p = (int16_t*)(&num);
@@ -62,3 +53,4 @@ void write_back_from_256(__m256 num, uint8_t* dst, int pos){
         dst[pos + i] = (uint8_t)clip(0, 255, *(p + (7 - i)));
     }
 }
+
