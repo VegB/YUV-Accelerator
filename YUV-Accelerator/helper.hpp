@@ -2,8 +2,8 @@
 //  helper.hpp
 //  YUV-Accelerator
 //
-//  Created by 朱芄蓉 on 17/12/2017.
-//  Copyright © 2017 朱芄蓉. All rights reserved.
+//  Created by VegB on 17/12/2017.
+//  Copyright © 2017 VegB. All rights reserved.
 //
 
 #ifndef helper_hpp
